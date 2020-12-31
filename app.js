@@ -8,7 +8,7 @@ var indexRouter = require('./routes/guest');
 var usersRouter = require('./routes/hostel-owner');
 const hbs = require('express-handlebars');
 var app = express();
-
+const db = require('./config/connection')
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -20,7 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+db.connect((err)=>{
+  if (err)console.log('Database not connected Error is '+err);
+  else console.log('Database connected');
+})
 app.use('/', indexRouter);
 app.use('/hostel', usersRouter);
 // catch 404 and forward to error handler

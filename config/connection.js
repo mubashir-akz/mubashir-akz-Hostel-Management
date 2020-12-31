@@ -5,11 +5,11 @@ const state = {
 };
 module.exports.connect = function (done) {
   const url = process.env.DB_CONFIG
-  const dbname = "Essence";
+  const dbname = "hostel";
 
   mongoClient.connect(url, { useUnifiedTopology: true }, (err, data) => {
     if (err) return done(err);
-    state.db = data.db(dbname);
+    state.db = data.db(dbname); 
     done();
   });
 };
