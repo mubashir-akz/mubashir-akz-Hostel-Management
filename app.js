@@ -1,20 +1,25 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var ENV = require('dotenv').config()
-var indexRouter = require('./routes/guest');
-var usersRouter = require('./routes/hostel-owner');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const ENV = require('dotenv').config()
+const indexRouter = require('./routes/guest');
+const usersRouter = require('./routes/hostel-owner');
 const hbs = require('express-handlebars');
-var app = express();
+const app = express();
 const db = require('./config/connection')
+const passport = require('passport')
+require('./views/Guest/passport')
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.engine('hbs', hbs({
   extname: 'hbs', defaultLayout: 'layout', layoutDir: `${__dirname}/views/layouts`, partialsDir: `${__dirname}/views/partials`,
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
