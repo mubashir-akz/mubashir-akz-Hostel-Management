@@ -1,27 +1,51 @@
-var express = require('express');
-var router = express.Router();
-var guestHelpers = require('../helpers/guestHelpers')
+const express = require('express');
+const router = express.Router();
+const guestHelpers = require('../helpers/guestHelpers')
 const passport = require('passport');
+const cookieSession = require('cookie-session')
+router.use(passport.initialize());
+router.use(passport.session());
+router.use(cookieSession({
+  name: 'tuto-session',
+  keys: ['key1', 'key2']
+}))
+
+function userValidating(req, res, next) {
+  if (req.session.usersGoogle) {
+    next()
+  } else {
+    res.redirect('/')
+  }
+}
 require('../views/Guest/passport')
 /* GET home page. */
-router.get('/', (req, res, next)=> {
-  res.render('Guest/Login', {  })
+router.get('/', (req, res, next) => {
+  res.render('Guest/Login', {})
 });
-router.get('/Register',(req,res)=>{
+router.get('/Register', (req, res) => {
   res.render('Guest/register')
 });
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
+
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/failed' }),
-  function(req, res) {
+  async function (req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/n');
+    // add to DataBase
+    const data = await guestHelpers.addGoogle(req.user._json);
+    console.log(data);
+    req.session.users = data
+    res.redirect('/home');
   }
 );
-
-router.get('/home', async (req,res)=>{
+router.get('/home', userValidating, async (req, res) => {
   let hostels = await guestHelpers.getHostelList()
-  res.render('Guest/home', { title: 'Express',guest:true,hostels});
+  res.render('Guest/home', { title: 'Express', guest: true, hostels, name: req.session.users[0].name });
+})
+router.get('/logout', (req, res) => {
+  req.session.users = ''
+  req.logOut()
+  res.redirect('/')
 })
 
 module.exports = router;

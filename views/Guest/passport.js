@@ -1,6 +1,5 @@
-const passport = require('passport')
-
-const GoogleStrategy = require('passport-google-oauth2').Strategy
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 passport.serializeUser(function(user, done) {
     /*
@@ -25,8 +24,8 @@ passport.use(new GoogleStrategy({
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
     callbackURL:process.env.GOOGLE_CALLBACK_URL,
     passReqToCallback:true
-},function(request,accesToken,refreshToken,profile,done){
-    console.log(profile);
-    done(null,profile)
-}))
-
+  },
+  function(request, accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+  }
+));

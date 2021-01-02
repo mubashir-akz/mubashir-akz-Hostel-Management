@@ -9,7 +9,6 @@ const usersRouter = require('./routes/hostel-owner');
 const hbs = require('express-handlebars');
 const app = express();
 const db = require('./config/connection')
-const passport = require('passport')
 require('./views/Guest/passport')
 
 // view engine setup
@@ -18,8 +17,6 @@ app.set('view engine', 'hbs');
 app.engine('hbs', hbs({
   extname: 'hbs', defaultLayout: 'layout', layoutDir: `${__dirname}/views/layouts`, partialsDir: `${__dirname}/views/partials`,
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
