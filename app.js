@@ -10,7 +10,6 @@ const hbs = require('express-handlebars');
 const app = express();
 const db = require('./config/connection')
 require('./views/Guest/passport')
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

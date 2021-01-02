@@ -2,13 +2,18 @@ const express = require('express');
 const router = express.Router();
 const guestHelpers = require('../helpers/guestHelpers')
 const passport = require('passport');
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
+const { Strategy } = require('passport');
+const expressSession = require('express-session')
 router.use(passport.initialize());
 router.use(passport.session());
 router.use(cookieSession({
   name: 'tuto-session',
   keys: ['key1', 'key2']
 }))
+router.use(expressSession({ secret: 'thisiskey' }))
+
+
 
 function userValidating(req, res, next) {
   if (req.session.usersGoogle) {
@@ -38,10 +43,16 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     res.redirect('/home');
   }
 );
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email,user_photos' }));
 router.get('/home', userValidating, async (req, res) => {
   let hostels = await guestHelpers.getHostelList()
   res.render('Guest/home', { title: 'Express', guest: true, hostels, name: req.session.users[0].name });
 })
+router.get('/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/profile',
+    failureRedirect: '/'
+  }));
 router.get('/logout', (req, res) => {
   req.session.users = ''
   req.logOut()
