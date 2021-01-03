@@ -46,5 +46,16 @@ module.exports = {
                 resolve(to)
             }
         })
+    },
+    addToDb:(data)=>{
+        return new Promise(async (resolve,reject)=>{
+            const datas = {
+                name:data.username,
+                email:data.email,
+                password:data.password
+            }
+            // const verify()
+        })
+
     }
 }

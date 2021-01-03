@@ -23,7 +23,7 @@ function userValidating(req, res, next) {
     res.redirect('/')
   }
 }
-function loginValidating(req,res,next) {
+function loginValidating(req, res, next) {
   if (req.session.users) {
     res.redirect('/home')
   } else {
@@ -35,7 +35,7 @@ require('../views/Guest/passport')
 router.get('/', loginValidating, (req, res, next) => {
   res.render('Guest/Login', {})
 });
-router.get('/Register',loginValidating, (req, res) => {
+router.get('/Register', loginValidating, (req, res) => {
   res.render('Guest/register')
 });
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -58,7 +58,7 @@ router.get('/home', userValidating, async (req, res) => {
   res.render('Guest/home', { title: 'Express', guest: true, hostels, name: req.session.users[0].name });
 })
 router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }),
-  async function (req, res) { 
+  async function (req, res) {
     console.log(req.user, '...............');
     const data = await guestHelpers.addFb(req.user._json)
     console.log(data);
@@ -67,11 +67,14 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
   }
 );
 
-router.post('/guest-register',(req,res)=>{
+router.post('/guest-register', async(req, res) => {
   console.log(req.body);
-  bcrypt.hash(req.body.password, 10, function(err, hash) {
+  await bcrypt.hash(req.body.password, 10, function (err, hash) {
     // Store hash in your password DB.
-});
+    req.body.password = hash
+    console.log(req.body);
+    guestHelpers.addToDb(req.body);
+  });
 })
 router.get('/logout', (req, res) => {
   req.session.users = ''
