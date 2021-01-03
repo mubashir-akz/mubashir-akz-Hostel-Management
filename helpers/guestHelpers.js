@@ -23,11 +23,26 @@ module.exports = {
             if (verify.length == 0) {
                 await db.get().collection(collections.GUEST_USERS).insertOne(datas)
                 var to = await db.get().collection(collections.GUEST_USERS).find({ gid: data.sub }).toArray()
-                console.log(to, '...............');
                 resolve(to)
             } else {
                 var to = await db.get().collection(collections.GUEST_USERS).find({ gid: data.sub }).toArray()
-                console.log(to, '...............');
+                resolve(to)
+            }
+        })
+    },
+    addFb: (data) => {
+        return new Promise(async (resolve, reject) => {
+            const datas = {
+                name: data.name,
+                fbId: data.id
+            }
+            const verify = await db.get().collection(collections.GUEST_USERS).find({ fbId: data.id }).toArray()
+            if (verify.length == 0) {
+                await db.get().collection(collections.GUEST_USERS).insertOne(datas)
+                var to = await db.get().collection(collections.GUEST_USERS).find({ fbId: data.id }).toArray()
+                resolve(to)
+            } else {
+                var to = await db.get().collection(collections.GUEST_USERS).find({ fbId: data.id }).toArray()
                 resolve(to)
             }
         })

@@ -16,13 +16,18 @@ app.set('view engine', 'hbs');
 app.engine('hbs', hbs({
   extname: 'hbs', defaultLayout: 'layout', layoutDir: `${__dirname}/views/layouts`, partialsDir: `${__dirname}/views/partials`,
 }));
+app.set('etag', false);
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-db.connect((err)=>{
-  if (err)console.log('Database not connected Error is '+err);
+db.connect((err) => {
+  if (err) console.log('Database not connected Error is ' + err);
   else console.log('Database connected');
 })
 app.use('/', indexRouter);
@@ -30,7 +35,7 @@ app.use('/hostel', usersRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
-});  
+});
 
 // error handler
 app.use(function (err, req, res, next) {

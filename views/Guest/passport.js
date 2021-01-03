@@ -33,13 +33,11 @@ passport.use(new GoogleStrategy({
 passport.use(new facebookStrategy({
 
     // pull in our app id and secret from our auth.js file
-    clientID: "882573909219149",
-    clientSecret: "18b2c39ce92b881a2f44cd468d29d1ad",
+    clientID: "780634352522696",
+    clientSecret: "0a5f92439571d5db6eb2d21721b59c3d",
     callbackURL: "http://localhost:3000/facebook/callback"
 
 },// facebook will send back the token and profile
     function (token, refreshToken, profile, done) {
-
-        console.log(profile)
         return done(null, profile)
     }));

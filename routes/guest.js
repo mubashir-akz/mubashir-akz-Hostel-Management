@@ -16,18 +16,25 @@ router.use(expressSession({ secret: 'thisiskey' }))
 
 
 function userValidating(req, res, next) {
-  if (req.session.usersGoogle) {
+  if (req.session.users) {
     next()
   } else {
     res.redirect('/')
   }
 }
+function loginValidating(req,res,next) {
+  if (req.session.users) {
+    res.redirect('/home')
+  } else {
+    next()
+  }
+}
 require('../views/Guest/passport')
 /* GET home page. */
-router.get('/', (req, res, next) => {
+router.get('/', loginValidating, (req, res, next) => {
   res.render('Guest/Login', {})
 });
-router.get('/Register', (req, res) => {
+router.get('/Register',loginValidating, (req, res) => {
   res.render('Guest/register')
 });
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -43,16 +50,21 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     res.redirect('/home');
   }
 );
-router.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email,user_photos' }));
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+
 router.get('/home', userValidating, async (req, res) => {
   let hostels = await guestHelpers.getHostelList()
   res.render('Guest/home', { title: 'Express', guest: true, hostels, name: req.session.users[0].name });
 })
-router.get('/facebook/callback',
-  passport.authenticate('facebook', {
-    successRedirect: '/profile',
-    failureRedirect: '/'
-  }));
+router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }),
+  async function (req, res) {
+    console.log(req.user, '...............');
+    const data = await guestHelpers.addFb(req.user._json)
+    console.log(data);
+    req.session.users = data
+    res.redirect('/home')
+  }
+);
 router.get('/logout', (req, res) => {
   req.session.users = ''
   req.logOut()
