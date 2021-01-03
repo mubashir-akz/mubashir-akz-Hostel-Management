@@ -3,6 +3,7 @@ const router = express.Router();
 const guestHelpers = require('../helpers/guestHelpers')
 const passport = require('passport');
 const cookieSession = require('cookie-session');
+const bcrypt = require('bcrypt');
 const { Strategy } = require('passport');
 const expressSession = require('express-session')
 router.use(passport.initialize());
@@ -65,10 +66,18 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
     res.redirect('/home')
   }
 );
+
+router.post('/guest-register',(req,res)=>{
+  console.log(req.body);
+  bcrypt.hash(req.body.password, 10, function(err, hash) {
+    // Store hash in your password DB.
+});
+})
 router.get('/logout', (req, res) => {
   req.session.users = ''
   req.logOut()
   res.redirect('/')
 })
+
 
 module.exports = router;
