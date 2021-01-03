@@ -57,7 +57,7 @@ router.get('/home', userValidating, async (req, res) => {
   res.render('Guest/home', { title: 'Express', guest: true, hostels, name: req.session.users[0].name });
 })
 router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }),
-  async function (req, res) {
+  async function (req, res) { 
     console.log(req.user, '...............');
     const data = await guestHelpers.addFb(req.user._json)
     console.log(data);
