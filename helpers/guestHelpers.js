@@ -2,7 +2,7 @@ const db = require("../config/connection");
 const collections = require("../config/collections");
 const { ObjectId } = require("mongodb");
 const object = require("mongodb").ObjectID;
-
+const bcrypt = require('bcrypt')
 module.exports = {
     getHostelList: () =>
         new Promise(async (resolve, reject) => {
@@ -15,8 +15,9 @@ module.exports = {
                 type: 'google',
                 name: data.name,
                 picture: data.picture,
-                email: data.email,
-                gid: data.sub
+                // email: data.email,
+                gid: data.sub,
+                // password: '33333333333333'
             }
             var verify = await db.get().collection(collections.GUEST_USERS).find({ gid: data.sub }).toArray()
             console.log(verify.length)
@@ -47,15 +48,40 @@ module.exports = {
             }
         })
     },
-    addToDb:(data)=>{
-        return new Promise(async (resolve,reject)=>{
+    addToDb: (data) => {
+        return new Promise(async (resolve, reject) => {
             const datas = {
-                name:data.username,
-                email:data.email,
-                password:data.password
+                name: data.username,
+                email: data.email,
+                password: data.password
             }
-            // const verify()
+            const verify = await db.get().collection(collections.GUEST_USERS).find({ email: datas.email }).toArray()
+            if (verify == 0) {
+                const d = await db.get().collection(collections.GUEST_USERS).insertOne(datas)
+                resolve(d.ops)
+            } else {
+                resolve(false)
+            }
         })
 
+    },
+    verifyLogin: async (data) => {
+        return new Promise(async (resolve, reject) => {
+            const response = {}
+            const verify = await db.get().collection(collections.GUEST_USERS).find({ email: data.email }).toArray()
+            console.log(verify);
+            if (verify[0]) {
+                bcrypt.compare(data.password, verify[0].password).then((status) => {
+                    if (status) {
+                        resolve(verify);
+                    } else {
+                        resolve({ status: false });
+                    }
+                });
+            } else {
+                console.log('not');
+                resolve({ status: false })
+            }
+        })
     }
 }

@@ -17,6 +17,12 @@
         </div>
         <div class="or-seperator"><i>or</i></div>
         <div class="form-group">
+            <div>
+                <div class="alert alert-danger alert-dismissible" style="display: none;" id="alert">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>E-mail </strong> already taken
+                </div>
+            </div>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">
@@ -78,7 +84,12 @@
             },
             method: 'post',
             success: (res) => {
-                console.log(res)
+                console.log(res.var)
+                if (res.var == false) {
+                    document.getElementById('alert').style.display = 'block'
+                } else {
+                    window.location.href = '/'
+                }
             }
         })
     }

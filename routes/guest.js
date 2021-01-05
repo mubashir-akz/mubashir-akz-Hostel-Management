@@ -67,14 +67,25 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
   }
 );
 
-router.post('/guest-register', async(req, res) => {
+router.post('/guest-register', async (req, res) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  req.body.password = hashedPassword
   console.log(req.body);
-  await bcrypt.hash(req.body.password, 10, function (err, hash) {
-    // Store hash in your password DB.
-    req.body.password = hash
-    console.log(req.body);
-    guestHelpers.addToDb(req.body);
-  });
+  const val = await guestHelpers.addToDb(req.body);
+  console.log(val);
+  // if(val == false){
+    res.json({ var: val })
+  // } else {
+    // res.json({var:true})
+  // }
+})
+router.post('/guest-login',async (req,res)=>{
+  const add = await guestHelpers.verifyLogin(req.body)
+  console.log(add);
+  if(add.status != false){
+    req.session.users = add
+  }
+  res.json(add) 
 })
 router.get('/logout', (req, res) => {
   req.session.users = ''
